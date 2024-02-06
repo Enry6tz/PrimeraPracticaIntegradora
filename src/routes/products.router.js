@@ -8,10 +8,10 @@ const productManager = require('../dao/db/product-manager-db.js');
 const ProductManager = new productManager();
 
 // Endpoint para obtener todos los productos con posibilidad de limitar resultados
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
     try {
         let limit = parseInt(req.query.limit);
-        const products =  ProductManager.getProducts();
+        const products = await ProductManager.getProducts();
         // Si limit es falsy, entonces devolvemos todos los productos.
         const limitedProducts = limit ? products.slice(0, limit) : products;
         res.status(200).send({ status: "success", data: limitedProducts });

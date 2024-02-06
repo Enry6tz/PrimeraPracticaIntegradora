@@ -8,11 +8,11 @@ const cartsManager = new CartsManager();
 
 
 // Endpoint para obtener todos los productos del carrito con el id seleccionado
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const cart = cartsManager.getCarts();
+    const cart = await cartsManager.getCarts();
     res.status(200).send({ status: "success", data: cart });
-    console.log("Productos obtenidos con éxito");
+    console.log("Carritos obtenidos con éxito");
   } catch (error) {
     console.error("Error al obtener productos:", error);
     res.status(500).send({ status: "error", error: "Error interno del servidor" });
@@ -29,7 +29,7 @@ router.get("/:id", async (req, res) => {
     }
     res.json({ status: "success", data: cart.products });
   } catch (error) {
-    console.error("Error al obtener el producto:", error);
+    console.error("Error al obtener el carrito:", error);
     res.status(500).send({ status: "error", error: "Error interno del servidor" });
   }
 });
@@ -52,7 +52,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
     const productStatus = await cartsManager.updateProduct(cartId, proId, quantity);
    if(!productStatus){
       console.error("Error al actualizar el carrito");
-      return  
+      return false;
     }
     res.json({ status: "success", productStatus });
   

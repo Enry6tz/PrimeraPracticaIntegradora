@@ -13,6 +13,15 @@ class CartManager {
        }
     }
 
+    async getCarts() {
+        try {
+            const carts = await CartModel.find()
+            return carts;
+        } catch (error) {
+            console.log('Error al obtener los carritos', error)
+        }
+    }
+
     // Método para obtener un carrito por su id
     async getCartsById(id) {
         try {
@@ -28,24 +37,28 @@ class CartManager {
        }
     }
 
-    async updateProduct(cartId, proId, quantity = 1) {
+
+    async updateProduct(cartId, productId, quantity = 1) {
         try {
-           const cart = await this.getCartsById(cartId);
-           if(cart){
-                const existProduct = cart.products.find(item => item.product.toString() === proId)
-                if(existProduct){
-                    existProduct.quantity += quantity;
-                }else{
-                    carrito.products.push({product: proId, quantity})
-                }
-           }
-           cart.markModified('products')
-           await cart.save();
-           return cart
+            const cart = await this.getCartsById(cartId); 
+            const existProduct = cart.products.find(item => item.product.toString() === productId);
+            
+            if(existProduct) {
+                existProduct.quantity += quantity;
+            } else {
+                cart.products.push({product: productId, quantity});
+            }
+
+            //Marcar la propiedad "products" como modificada: 
+            cart.markModified("products");
+            await cart.save();
+            return cart;
+            
         } catch (error) {
-            console.log("Error al actualizar el producto", error);
+            console.log("error al agregar un producto", error);
         }
     }
+
 
 }
 
