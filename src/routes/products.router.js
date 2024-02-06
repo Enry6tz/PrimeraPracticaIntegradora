@@ -1,14 +1,11 @@
 const path = require('path');
 const express = require("express");
 const router = express.Router();
-const productManager = require('../dao/fs/product-manager.js');
+const productManager = require('../dao/db/product-manager-db.js');
 
-
-// Obtener la ruta completa al archivo productos.json desde el punto donde se ejecuta este script
-const productosJsonPath = path.join(__dirname, '..', '/models/products.json');
 
 // Crea una instancia de ProductManager con la ruta correcta
-const ProductManager = new productManager(productosJsonPath);
+const ProductManager = new productManager();
 
 // Endpoint para obtener todos los productos con posibilidad de limitar resultados
 router.get("/", (req, res) => {
@@ -28,7 +25,7 @@ router.get("/", (req, res) => {
 //endpoint para obtener producto por id
 router.get("/:id", async (req, res) => {
     try {
-        const productId = parseInt(req.params.id);
+        const productId = req.params.id;
         // Lógica para buscar el producto por su ID
         const productoEncontrado = await ProductManager.getProductById(productId);
         if (!productoEncontrado) {
@@ -59,7 +56,7 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
+        const id = req.params.id;
         const updateProduct = req.body;
         const productStatus = await ProductManager.updateProduct(id, updateProduct);
         if (productStatus === false) {
@@ -76,7 +73,7 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
+        const id = req.params.id;
         const productStatus = await ProductManager.deleteProduct(id);
         if (productStatus === false) {
             return res.status(404).json({ status: "error", message: "Producto no encontrado" });

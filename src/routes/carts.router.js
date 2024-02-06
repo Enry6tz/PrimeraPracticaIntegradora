@@ -1,12 +1,10 @@
 const path = require('path');
 const express = require("express");
 const router = express.Router();
-const CartsManager = require('../dao/fs/cart-manager.js');
+const CartsManager = require('../dao/db/cart-manager-db.js');
 
-// Obtener la ruta completa al archivo productos.json desde el punto donde se ejecuta este script
-const productosJsonPath = path.join(__dirname, '..', '/models/carts.json');
-// Crea una instancia de CartsManager con la ruta correcta
-const cartsManager = new CartsManager(productosJsonPath);
+
+const cartsManager = new CartsManager();
 
 
 // Endpoint para obtener todos los productos del carrito con el id seleccionado
@@ -23,7 +21,7 @@ router.get("/", (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const cartId = parseInt(req.params.id);
+    const cartId = req.params.id;
     const cart = await cartsManager.getCartsById(cartId);
     if (!cart) {
       // Si el producto no se encuentra, envía un código de estado 404
@@ -48,9 +46,9 @@ router.post("/", async (req, res) => {
 
 router.post("/:cid/product/:pid", async (req, res) => {
   try {
-    const cartId = parseInt(req.params.cid);
-    const proId = parseInt(req.params.pid);
-    const quantity = parseInt(req.body.quantity);
+    const cartId = req.params.cid;
+    const proId = req.params.pid;
+    const quantity = req.body.quantity;
     const productStatus = await cartsManager.updateProduct(cartId, proId, quantity);
    if(!productStatus){
       console.error("Error al actualizar el carrito");
